@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Product Page</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root{--bg:#faf8f4;--surface:#ffffff;--border:#e8e0d4;--accent:#c8502a;--text:#1a1208;--muted:#8a7d6b;--light:#f0ebe2;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+  header{display:flex;align-items:center;justify-content:space-between;padding:20px 60px;background:var(--surface);border-bottom:1px solid var(--border);}
+  .brand{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;letter-spacing:-0.5px;}
+  .nav{display:flex;gap:28px;font-size:.875rem;color:var(--muted);}
+  .nav span{cursor:pointer;transition:color .2s;}.nav span:hover{color:var(--accent);}
+  .cart-btn{background:var(--text);color:#fff;border:none;padding:10px 22px;border-radius:6px;font-family:'Jost',sans-serif;font-weight:500;cursor:pointer;font-size:.875rem;transition:background .2s;}
+  .cart-btn:hover{background:var(--accent);}
+  .container{max-width:1100px;margin:60px auto;padding:0 40px;display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:start;}
+  .gallery{display:flex;flex-direction:column;gap:14px;}
+  .main-img{border-radius:16px;overflow:hidden;background:var(--light);aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:8rem;transition:transform .3s;}
+  .main-img:hover{transform:scale(1.02);}
+  .thumbs{display:flex;gap:10px;}
+  .thumb{width:80px;height:80px;border-radius:10px;background:var(--light);border:2px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:2.2rem;transition:border-color .2s;}
+  .thumb.active,.thumb:hover{border-color:var(--accent);}
+  .info{padding-top:10px;}
+  .category{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:12px;}
+  .product-title{font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:700;line-height:1.2;margin-bottom:16px;}
+  .rating{display:flex;align-items:center;gap:8px;margin-bottom:20px;}
+  .stars{color:#f59e0b;letter-spacing:2px;font-size:1rem;}
+  .review-count{font-size:.8rem;color:var(--muted);}
+  .price-row{display:flex;align-items:baseline;gap:14px;margin-bottom:24px;}
+  .price{font-size:2rem;font-weight:600;color:var(--accent);}
+  .original{font-size:1.1rem;color:var(--muted);text-decoration:line-through;}
+  .discount{background:var(--accent);color:#fff;font-size:.72rem;font-weight:700;padding:3px 8px;border-radius:4px;}
+  .desc{font-size:.9rem;color:var(--muted);line-height:1.7;margin-bottom:28px;}
+  .option-label{font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+  .colors{display:flex;gap:10px;margin-bottom:24px;}
+  .color-dot{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:border-color .2s;}
+  .color-dot.active,.color-dot:hover{border-color:var(--text);}
+  .sizes{display:flex;gap:8px;margin-bottom:28px;}
+  .size-btn{width:44px;height:44px;border:1.5px solid var(--border);background:transparent;border-radius:8px;font-family:'Jost',sans-serif;font-size:.875rem;cursor:pointer;transition:all .2s;font-weight:500;}
+  .size-btn:hover,.size-btn.active{background:var(--text);color:#fff;border-color:var(--text);}
+  .actions{display:flex;gap:12px;margin-bottom:28px;}
+  .qty{display:flex;align-items:center;gap:0;border:1.5px solid var(--border);border-radius:8px;overflow:hidden;}
+  .qty-btn{width:40px;height:48px;background:var(--light);border:none;cursor:pointer;font-size:1.2rem;transition:background .2s;}
+  .qty-btn:hover{background:var(--border);}
+  .qty-val{width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:1rem;}
+  .add-btn{flex:1;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:'Jost',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:.5px;}
+  .add-btn:hover{background:#a03d20;transform:translateY(-1px);}
+  .wish-btn{width:48px;height:48px;background:var(--light);border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:1.2rem;transition:all .2s;}
+  .wish-btn:hover{border-color:var(--accent);background:rgba(200,80,42,.08);}
+  .features{display:flex;flex-direction:column;gap:10px;}
+  .feature{display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--muted);}
+  .feat-icon{font-size:1rem;}
+  @keyframes pop{0%{transform:scale(1);}50%{transform:scale(1.08);}100%{transform:scale(1);}}
+  .pop{animation:pop .3s ease;}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">MAISON</div>
+  <nav class="nav">
+    <span>Collection</span><span>About</span><span>Journal</span><span>Contact</span>
+  </nav>
+  <button class="cart-btn" id="cartBtn">🛒 Cart (0)</button>
+</header>
+<div class="container">
+  <div class="gallery">
+    <div class="main-img" id="mainImg">👟</div>
+    <div class="thumbs">
+      <div class="thumb active" onclick="setImg(this,'👟')">👟</div>
+      <div class="thumb" onclick="setImg(this,'👞')">👞</div>
+      <div class="thumb" onclick="setImg(this,'👠')">👠</div>
+      <div class="thumb" onclick="setImg(this,'🥿')">🥿</div>
+    </div>
+  </div>
+  <div class="info">
+    <div class="category">Footwear · Limited Edition</div>
+    <div class="product-title">Artisan Leather Sneaker</div>
+    <div class="rating">
+      <span class="stars">★★★★★</span>
+      <span class="review-count">4.9 · 248 reviews</span>
+    </div>
+    <div class="price-row">
+      <span class="price">$189</span>
+      <span class="original">$249</span>
+      <span class="discount">24% OFF</span>
+    </div>
+    <p class="desc">Hand-crafted from full-grain Italian leather, this sneaker blends old-world artisanship with modern silhouettes. Naturally breathable, built to age beautifully.</p>
+    <div class="option-label">Color</div>
+    <div class="colors">
+      <div class="color-dot active" style="background:#d4a574;" onclick="selectColor(this)"></div>
+      <div class="color-dot" style="background:#2d2d2d;" onclick="selectColor(this)"></div>
+      <div class="color-dot" style="background:#c8502a;" onclick="selectColor(this)"></div>
+      <div class="color-dot" style="background:#8fad91;" onclick="selectColor(this)"></div>
+    </div>
+    <div class="option-label">Size (EU)</div>
+    <div class="sizes">
+      <button class="size-btn" onclick="selectSize(this)">39</button>
+      <button class="size-btn active" onclick="selectSize(this)">40</button>
+      <button class="size-btn" onclick="selectSize(this)">41</button>
+      <button class="size-btn" onclick="selectSize(this)">42</button>
+      <button class="size-btn" onclick="selectSize(this)">43</button>
+    </div>
+    <div class="actions">
+      <div class="qty">
+        <button class="qty-btn" onclick="changeQty(-1)">−</button>
+        <div class="qty-val" id="qty">1</div>
+        <button class="qty-btn" onclick="changeQty(1)">+</button>
+      </div>
+      <button class="add-btn" onclick="addToCart()">Add to Cart</button>
+      <button class="wish-btn" onclick="this.textContent='❤️'">🤍</button>
+    </div>
+    <div class="features">
+      <div class="feature"><span class="feat-icon">🚚</span> Free shipping on orders over $150</div>
+      <div class="feature"><span class="feat-icon">↩️</span> 30-day free returns</div>
+      <div class="feature"><span class="feat-icon">🛡️</span> 2-year craftsmanship guarantee</div>
+    </div>
+  </div>
+</div>
+<script>
+  let cart=0,qty=1;
+  function changeQty(d){qty=Math.max(1,qty+d);document.getElementById('qty').textContent=qty;}
+  function addToCart(){
+    cart+=qty;
+    const btn=document.getElementById('cartBtn');
+    btn.textContent=`🛒 Cart (${cart})`;
+    btn.classList.add('pop');setTimeout(()=>btn.classList.remove('pop'),300);
+  }
+  function setImg(el,emoji){
+    document.querySelectorAll('.thumb').forEach(t=>t.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('mainImg').textContent=emoji;
+  }
+  function selectColor(el){document.querySelectorAll('.color-dot').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+  function selectSize(el){document.querySelectorAll('.size-btn').forEach(s=>s.classList.remove('active'));el.classList.add('active');}
+</script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+name: CICD Pipeline
+
+on:
+  # push:
+  #   branches:
+  #     - main   # Uncomment this later to trigger automatically on push
+  workflow_dispatch:   # Allows you to trigger the workflow manually from GitHub Actions UI
+
+env:
+  SWR_DOMAIN: swr.af-south-1.myhuaweicloud.com
+  TAG: ${{ github.sha }}  # You can also use v1.0.${{ github.sha }} for versioning
+  IMAGE_NAME: ecommerce-product
+
+jobs:
+  build-and-push-image-to-SWR:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to SWR
+        run: |
+          echo "${{ secrets.SWR_PASSWORD }}" | docker login \
+            -u "${{ secrets.SWR_USERNAME }}" \
+            --password-stdin \
+            $SWR_DOMAIN
+
+      - name: Build Docker image
+        run: |
+          docker build -t $SWR_DOMAIN/${{ secrets.ORG_NAME }}/$IMAGE_NAME:$TAG .
+
+      - name: Push Docker image
+        run: |
+          docker push $SWR_DOMAIN/${{ secrets.ORG_NAME }}/$IMAGE_NAME:$TAG
+
+
+  modify_image_tag_in_K8s_repo:
+    needs: build-and-push-image-to-SWR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          repository: 'GAO-abs/k8s-manifests-argocd-gitops'
+          token: ${{ secrets.GIT_TOKEN }}
+      
+
+      - name: Modifying the k8s manifest in git repo
+        run: |
+          git config user.email "${{ secrets.GIT_EMAIL }}"
+          git config user.name "GAO-abs"
+          echo "Working Directory: $(pwd)"
+       
+          # Navigate to the specific helm chart directory
+    
+          cd ecommerce-app-chart
+
+          # Print values.yaml for debugging before changes
+          echo "Before modification: "
+          cat values.yaml
+         
+          sed -i 's/tag: .*/tag: "${{github.sha}}"/' values.yaml
+         
+          # Print values.yaml for debugging after changes
+          echo "After modification:"
+          cat values.yaml
+         
+          git add .
+          git commit -m "Update image tag to ${{ github.sha }}"
+          git push origin main
